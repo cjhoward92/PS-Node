@@ -2,20 +2,15 @@ module Main where
 
 import Prelude
 
-import Control.Monad.Eff (Eff, runPure)
-import Control.Monad.Eff.Class (liftEff)
+import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log, logShow)
 import Control.Monad.Eff.Exception (EXCEPTION)
 import Control.Monad.Aff (Aff, makeAff, launchAff)
 import Control.Monad.Aff.Console as AffConsole
 
-import Data.Foldable (foldMap)
-import Data.Maybe (Maybe(..), fromMaybe)
-
-import Node.Encoding (Encoding(..))
 import Node.HTTP (HTTP, listen, createServer, setHeader, requestMethod, requestURL, responseAsStream, requestAsStream, setStatusCode)
 import Node.HTTP.Client as Client
-import Node.Stream (Writable, Readable, end, pipe)
+import Node.Stream (Writable, Readable, end)
 import Node.Buffer as Buffer
 
 foreign import stdout :: forall eff r. Writable r eff
@@ -31,8 +26,11 @@ main = do
     log "Headers: "
     logShow $ Client.responseHeaders response
     log "Response: "
+
+    -- Builds a Readable stream from the response
     let responseStream = Client.responseAsStream response
-    -- pipe responseStream outputStream
+    
+    -- This is to avoid callbacks. We need launchAff to transform Aff -> Eff
     launchAff $ do
       buf <- streamToBuffer' responseStream
       AffConsole.logShow $ buf
