@@ -1,0 +1,17 @@
+{
+  "name": "ps-node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=prod node index.js",
+    "build": "pulp build",
+    "repl": "pulp repl",
+    "dev": "npm run build && cross-env NODE_ENV=dev node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cross-env": "^5.0.0"
+  }
+}
